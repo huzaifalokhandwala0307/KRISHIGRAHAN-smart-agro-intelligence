@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <section class="green_circle">
+        <div class="white-gloowupp-glass">
+            Field Intelligence Terminal v1.0
+        </div>
+        <div class="head">
+
+            <div class="name">
+                <h1>
+                    KRISHIGRAHAN
+                </h1>
+            </div>
+            <div class="head-text"> 
+                <h1>
+                    Grow Smarter,
+                    Harvest Better
+                </h1>
+            </div>
+        </div>
+        <div class="sub-head">
+            AI-Powered Crop & Fertilizer Recommendations    
+        </div> 
+         
+        <a href="#prediction_form">
+            <button class="analyzesoil">
+                Analyze my soil
+            </button>
+        </a>
+        <a href="#schemes">
+            <button class="howitworks">
+                Government Schemes
+            </button>
+        </a>
+    </section>     
+
+    <section>
+    <ul>
+        <li>
+            <div>
+                <h1>22+</h1>
+                <p>Crops</p>
+            </div>
+        </li>
+
+        <li>
+            <div>
+                <h1>14</h1>
+                <p>Fertilizers</p>
+            </div>
+        </li>
+
+        <li>
+            <div>
+                <h1>90+</h1>
+                <p>Happy Farmers</p>
+            </div>
+        </li>
+
+        <li>
+            <div>
+                <h1>99%</h1>
+                <p>Accuracy</p>
+            </div>
+        </li>
+
+        <li>
+            <div>
+                <h1>Free</h1>
+                <p>for indian farmers</p>
+            </div>
+        </li>
+    </ul>
+</section>
+
+    <div class="fieldneeds">
+        <h3>
+            What We Do
+        </h3>
+        <h1>
+            We analyze field and give 
+        </h1>
+
+        <div class="features">
+            <div>
+                <h1>🌱</h1>
+                <h3>Crop Recommendation</h3>
+                <p>Best crop for your soil and climate</p>
+            </div>
+
+            <div>
+                <h1>🧪</h1>
+                <h3>Fertilizer Suggestion</h3>
+                <p>Exact nutrients your field needs</p>
+            </div>
+
+            <div>
+                <h1>🌦️</h1>
+                <h3>Weather Aware</h3>
+                <p>Real-time climate based advice</p>
+            </div>
+
+            <div>
+                <h1>📋</h1>
+                <h3>Farming Guidelines</h3>
+                <p>Step-by-step guidance</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="prediction_form" id="prediction_form">
+                <div class="prediction_text">
+                    <h1>
+                        Predict Crop and Fertilizer
+                    </h1>
+                    <p>
+                        Enter your soil and climate data to get crop and fertilizer recommendations
+                    </p>
+                </div>
+
+                <div class="form">
+                    <h5>
+                        Input Parameters
+                    </h5>
+                    <h2>
+                        input parameters
+                    </h2>
+
+                    <form action="/predict" method="POST">
+
+                        <div class="grid">
+
+                            <div class="field">
+                                <label for="N">Nitrogen (N)</label>
+                                <input type="number" id="N" name="N" placeholder="e.g. 90" step="any" required>
+                            </div>
+
+                            <div class="field">
+                                <label for="P">Phosphorus (P)</label>
+                                <input type="number" id="P" name="P" placeholder="e.g. 42" step="any" required>
+                            </div>
+
+                            <div class="field">
+                                <label for="K">Potassium (K)</label>
+                                <input type="number" id="K" name="K" placeholder="e.g. 43" step="any" required>
+                            </div>
+
+                            <div class="field">
+                                <label for="temp">Temperature (°C)</label>
+                                <input type="number" id="temp" name="temp" placeholder="e.g. 25" step="any" required>
+                            </div>
+
+                            <div class="field">
+                                <label for="humidity">Humidity (%)</label>
+                                <input type="number" id="humidity" name="humidity" placeholder="0 - 100" min="0" max="100" step="any" required>
+                            </div>
+
+                            <div class="field">
+                                <label for="ph">pH Level</label>
+                                <input type="number" id="ph" name="ph" placeholder="0 - 14" min="0" max="14" step="any" required>
+                            </div>
+
+                            <div class="field">
+                                <label for="rainfall">Rainfall (mm)</label>
+                                <input type="number" id="rainfall" name="rainfall" placeholder="e.g. 200" step="any" required>
+                            </div>
+
+                            <div class="field">
+                                <label for="moisture">Moisture (%)</label>
+                                <input type="number" id="moisture" name="moisture" placeholder="e.g. 50" step="any" required>
+                            </div>
+
+                            <div class="field">
+                                <label for="soil_type">Soil Type</label>
+                                <select id="soil_type" name="soil_type" required>
+                                    <option value="" disabled selected>Select soil type</option>
+                                    <option value="loamy">Loamy</option>
+                                    <option value="sandy">Sandy</option>
+                                    <option value="clay">Clay</option>
+                                    <option value="black">Black</option>
+                                    <option value="red">Red</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <button type="submit">🔍 Get Recommendation</button>
+
+                    </form>
+                </div>
+
+                <div class="result">
+                    <div class="crop">
+                        <h2>Recommended Crop</h2>
+                        <p>{{ crop }}</p>
+                    </div>
+
+                    <div class="fertilizer">
+                        <h2>Recommended Fertilizer</h2>
+                        <p>{{ fert }}</p>
+                    </div>
+
+                    <div class="info">
+                        {% if info %}
+                            <h2>{{ crop.upper() }} Cultivation Advice</h2>
+                            <p><b>Best Temperature:</b> {{ info.temp }}</p>
+                            <ul>
+                                {% for tip in info.tips %}
+                                    <li>{{ tip }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>Cultivation advice for "{{ crop }}" is not available yet.</p>
+                        {% endif %}
+                    </div>
+                </div>
+    </div>  
+    
+    <div class="quotes">
+        <h5>
+            Kisan Ki Awaaz
+        </h5>
+        <h2>
+            खेती की बातें, दिल की बातें
+        </h2>
+        <div class="quote">
+            
+        </div>
+    </div>
+
+    <div class="schemes" id="schemes">
+        <h3>Government Schemes</h3>
+        <h1>किसानों के लिए सरकारी योजनाएं</h1>
+        <div class="schemes-grid">
+
+            <div class="scheme-card">
+            <h4>PM-KISAN</h4>
+            <p>₹6,000/year direct to farmer's bank account in 3 installments</p>
+            <a href="https://pmkisan.gov.in" target="_blank">pmkisan.gov.in →</a>
+            </div>
+
+            <div class="scheme-card">
+            <h4>PM Fasal Bima Yojana</h4>
+            <p>Crop insurance scheme — low premium, full loss coverage</p>
+            <a href="https://pmfby.gov.in" target="_blank">pmfby.gov.in →</a>
+            </div>
+
+            <div class="scheme-card">
+            <h4>Kisan Credit Card</h4>
+            <p>Low interest credit up to ₹3 lakh for seeds, fertilizers & tools</p>
+            <a href="https://www.nabard.org" target="_blank">nabard.org →</a>
+            </div>
+
+            <div class="scheme-card">
+            <h4>Soil Health Card</h4>
+            <p>Free soil testing + nutrient report for every 2 years</p>
+            <a href="https://soilhealth.dac.gov.in" target="_blank">soilhealth.dac.gov.in →</a>
+            </div>
+
+            <div class="scheme-card">
+            <h4>eNAM</h4>
+            <p>Sell crops online at best price — national agri market platform</p>
+            <a href="https://enam.gov.in" target="_blank">enam.gov.in →</a>
+            </div>
+
+            <div class="scheme-card">
+            <h4>PMKVY (AgriSkill)</h4>
+            <p>Free farming skill training + ₹8,000 stipend for youth farmers</p>
+            <a href="https://pmkvyofficial.org" target="_blank">pmkvyofficial.org →</a>
+            </div>
+
+        </div>
+        </div>
+
+    <footer>
+        KRISHIGRAHAN | Built with love for farmers by Smart Agro Intelligence | @Huzaifa | 28.3.2026
+    </footer>
+
+    <script src="static/script.js"></script>   
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
