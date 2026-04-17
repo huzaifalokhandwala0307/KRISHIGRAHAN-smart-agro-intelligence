@@ -1,12 +1,15 @@
+import os
+
 from flask import Flask, render_template, request
 import joblib
 import pandas as pd
-
+import os
 app = Flask(__name__)
 
-crop_pred_model = joblib.load('crop_model.joblib')
-fert_pred_model = joblib.load('fertilizer_model.joblib')
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+crop_pred_model = joblib.load(os.path.join(BASE_DIR, "../crop_model.joblib"))
+fert_pred_model = joblib.load(os.path.join(BASE_DIR, "../fertilizer_model.joblib"))
 crop_advice = {
     "rice": {
         "temp": "20°C to 35°C",
@@ -233,6 +236,5 @@ def predict():
     info = crop_advice.get(crop.lower(), None)
 
     return render_template('index.html', crop=crop, fert=fert, info=info)
-
-if __name__ == '__main__':
-    app.run(debug=True)
+    
+handler = app.run(debug=True)
