@@ -197,6 +197,13 @@
                     </form>
                 </div>
 
+                {% if error %}
+                    <div class="error-message" style="color: red; text-align: center; margin-top: 20px;">
+                        <p>{{ error }}</p>
+                    </div>
+                {% endif %}
+
+                {% if crop and fert %}
                 <div class="result">
                     <div class="crop">
                         <h2>Recommended Crop</h2>
@@ -222,6 +229,7 @@
                         {% endif %}
                     </div>
                 </div>
+                {% endif %}
     </div>  
     
     <div class="quotes">

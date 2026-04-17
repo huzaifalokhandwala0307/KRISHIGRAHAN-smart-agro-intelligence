@@ -1,15 +1,16 @@
 import os
-
 from flask import Flask, render_template, request
 import joblib
 import pandas as pd
-import os
+
 app = Flask(__name__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# Load models
 crop_pred_model = joblib.load(os.path.join(BASE_DIR, "crop_model.joblib"))
 fert_pred_model = joblib.load(os.path.join(BASE_DIR, "fertilizer_model.joblib"))
+
 crop_advice = {
     "rice": {
         "temp": "20°C to 35°C",
@@ -189,53 +190,57 @@ crop_advice = {
     }
 }
 
-
-@app.route('/')
+@app.route('/', methods=['GET'])
 def index():
-    return render_template('index.html')
+    return render_template('index.html', crop=None, fert=None, info=None)
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    N = float(request.form['N'])
-    P = float(request.form['P'])
-    K = float(request.form['K'])
-    temp = float(request.form['temp'])
-    humidity = float(request.form['humidity'])
-    ph = float(request.form['ph'])
-    rainfall = float(request.form['rainfall'])
-    soil_type = request.form['soil_type']
-    moisture = float(request.form['moisture'])
+    try:
+        N = float(request.form['N'])
+        P = float(request.form['P'])
+        K = float(request.form['K'])
+        temp = float(request.form['temp'])
+        humidity = float(request.form['humidity'])
+        ph = float(request.form['ph'])
+        rainfall = float(request.form['rainfall'])
+        soil_type = request.form['soil_type']
+        moisture = float(request.form['moisture'])
 
-    # ✅ Match training columns exactly
-    crop_input = pd.DataFrame([{
-        "n": N,
-        "p": P,
-        "k": K,
-        "temperature": temp,   # was 'temp' — training uses 'temperature'
-        "humidity": humidity,
-        "ph": ph,
-        "rainfall": rainfall
-    }])
+        # Match training columns exactly
+        crop_input = pd.DataFrame([{
+            "n": N,
+            "p": P,
+            "k": K,
+            "temperature": temp,
+            "humidity": humidity,
+            "ph": ph,
+            "rainfall": rainfall
+        }])
 
-    crop = crop_pred_model.predict(crop_input)[0]
+        crop = crop_pred_model.predict(crop_input)[0]
 
-    # ✅ Match fertilizer training columns exactly
-    fert_input = pd.DataFrame([{
-        "temparature": temp,   # note: typo in training data — 'temparature'
-        "humidity": humidity,
-        "moisture": moisture,
-        "nitrogen": N,         # was 'N' — training uses 'nitrogen'
-        "potassium": K,        # was 'K' — training uses 'potassium'
-        "phosphorous": P,      # was 'P' — training uses 'phosphorous'
-        "crop_type": crop,
-        "soil_type": soil_type
-    }])
+        # Match fertilizer training columns exactly
+        fert_input = pd.DataFrame([{
+            "temparature": temp,
+            "humidity": humidity,
+            "moisture": moisture,
+            "nitrogen": N,
+            "potassium": K,
+            "phosphorous": P,
+            "crop_type": crop,
+            "soil_type": soil_type
+        }])
 
-    fert = fert_pred_model.predict(fert_input)[0]
+        fert = fert_pred_model.predict(fert_input)[0]
+        info = crop_advice.get(crop.lower(), None)
 
-    info = crop_advice.get(crop.lower(), None)
+        return render_template('index.html', crop=crop, fert=fert, info=info)
 
-    return render_template('index.html', crop=crop, fert=fert, info=info)
-    
+    except Exception as e:
+        print(f"Error during prediction: {e}")
+        return render_template('index.html', error="An error occurred during prediction. Please check your inputs.", crop=None, fert=None, info=None)
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
