@@ -103,14 +103,9 @@ python app.py
 
 ---
 
-## 📸 Screenshots
-
-> Add screenshots here to showcase your UI
-
----
-
 ## 🔮 Future Improvements
 
+- 📡 IoT-based integration for real-time soil and environmental data collection
 - 🌍 Live weather API integration
 - 📊 Data visualization dashboard
 - 📱 Fully responsive mobile UI
