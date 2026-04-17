@@ -238,5 +238,3 @@ def predict():
     return render_template('index.html', crop=crop, fert=fert, info=info)
     
 handler = app.run(debug=True)
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
