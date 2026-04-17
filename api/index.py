@@ -8,8 +8,8 @@ app = Flask(__name__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-crop_pred_model = joblib.load(os.path.join(BASE_DIR, "../crop_model.joblib"))
-fert_pred_model = joblib.load(os.path.join(BASE_DIR, "../fertilizer_model.joblib"))
+crop_pred_model = joblib.load(os.path.join(BASE_DIR, "crop_model.joblib"))
+fert_pred_model = joblib.load(os.path.join(BASE_DIR, "fertilizer_model.joblib"))
 crop_advice = {
     "rice": {
         "temp": "20°C to 35°C",
