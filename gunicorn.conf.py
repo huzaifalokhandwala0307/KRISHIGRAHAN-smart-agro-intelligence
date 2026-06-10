@@ -1,4 +1,4 @@
 timeout = 120
-workers = 1
-threads = 1
+workers = 2
+threads = 2
 worker_class = "sync"
