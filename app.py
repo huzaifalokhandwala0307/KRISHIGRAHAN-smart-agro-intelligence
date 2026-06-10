@@ -5,6 +5,7 @@ import joblib
 import pandas as pd
 import numpy as np  
 from inference import load_disease_model, predict_disease
+from disease_data import get_disease_info
 
 app = Flask(__name__)
 
@@ -286,6 +287,20 @@ def predict_disease_route():
             DISEASE_CLASSES,
             image_bytes
         )
+
+        if result and "predictions" in result and len(result["predictions"]) > 0:
+            primary_pred = result["predictions"][0]
+            info = get_disease_info(primary_pred["disease"])
+            if info is None:
+                info = {
+                    "what_it_is": "Detailed information about this specific condition is currently unavailable.",
+                    "symptoms": ["Leaf spot or discoloration", "Altered leaf texture or structure", "Reduced plant vigor"],
+                    "causes": ["Environmental stress factors", "Fungal, bacterial, or viral pathogen spread"],
+                    "treatment": ["Isolate the affected plant if possible", "Maintain general hygiene and remove infected leaves", "Consult with a local agronomist"],
+                    "prevention": ["Use certified disease-free seeds and planting material", "Maintain proper crop spacing and airflow", "Regularly scout crops for early disease detection"],
+                    "severity": "Medium"
+                }
+            primary_pred["info"] = info
 
         return jsonify(result)
 

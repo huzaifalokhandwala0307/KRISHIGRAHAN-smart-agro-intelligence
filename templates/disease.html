@@ -60,4 +60,198 @@
             <div class="disease-result-container" id="disease-result" style="display: none;"></div>
         </div>
     </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Override the global renderDiseaseResult function loaded from static/script.js
+        window.renderDiseaseResult = function(data) {
+            const resContainer = document.getElementById('disease-result');
+            if (!resContainer) return;
+            const predictions = data.predictions;
+            if (!predictions || predictions.length === 0) {
+                resContainer.innerHTML = `
+                    <div class="disease-result-card diseased" style="background: #fff0ed; border-color: #d04030;">
+                        <h2 style="color: #b03020;">❌ Error</h2>
+                        <p style="color: #c04030;">No prediction results found.</p>
+                    </div>
+                `;
+                resContainer.style.display = 'block';
+                resContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                return;
+            }
+
+            const primary = predictions[0];
+            const second = predictions.length > 1 ? predictions[1] : null;
+            const third = predictions.length > 2 ? predictions[2] : null;
+
+            // Helper to format name
+            function formatDiseaseNameLocal(className) {
+                if (!className) return { plant: '', disease: '' };
+                let plantName = '';
+                let diseaseName = className;
+                
+                if (className.includes('___')) {
+                    const parts = className.split('___');
+                    plantName = parts[0].replace(/_/g, ' ');
+                    diseaseName = parts[1].replace(/_/g, ' ');
+                } else if (className.includes('__')) {
+                    const parts = className.split('__');
+                    plantName = parts[0].replace(/_/g, ' ');
+                    diseaseName = parts[1].replace(/_/g, ' ');
+                } else {
+                    diseaseName = className.replace(/_/g, ' ');
+                }
+                
+                return {
+                    plant: plantName,
+                    disease: diseaseName
+                };
+            }
+
+            const primaryInfo = formatDiseaseNameLocal(primary.disease);
+
+            // Determine severity and styling
+            let severity = 'Medium';
+            let badgeStyle = '';
+            let badgeText = '';
+
+            if (primary.is_healthy) {
+                severity = 'Low';
+                badgeStyle = 'display: inline-block; padding: 4px 10px; font-size: 11px; font-weight: bold; border-radius: 4px; background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; text-transform: uppercase;';
+                badgeText = 'No Disease Detected';
+            } else {
+                const info = primary.info || {};
+                severity = info.severity || 'Medium';
+                if (severity === 'Low') {
+                    badgeStyle = 'display: inline-block; padding: 4px 10px; font-size: 11px; font-weight: bold; border-radius: 4px; background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; text-transform: uppercase;';
+                    badgeText = 'Low Severity';
+                } else if (severity === 'Medium') {
+                    badgeStyle = 'display: inline-block; padding: 4px 10px; font-size: 11px; font-weight: bold; border-radius: 4px; background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; text-transform: uppercase;';
+                    badgeText = 'Medium Severity';
+                } else {
+                    badgeStyle = 'display: inline-block; padding: 4px 10px; font-size: 11px; font-weight: bold; border-radius: 4px; background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; text-transform: uppercase;';
+                    badgeText = 'High Severity';
+                }
+            }
+
+            let htmlContent = '';
+
+            // Primary Prediction Card
+            if (primary.is_healthy) {
+                htmlContent += `
+                    <div class="disease-result-card healthy" style="margin-top: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                            <h2 style="margin: 0; color: #1a6b2f;">✅ Healthy Plant</h2>
+                            <span style="${badgeStyle}">${badgeText}</span>
+                        </div>
+                        <p style="margin-top: 10px;">The analyzed leaf from the <strong>${primaryInfo.plant || 'plant'}</strong> appears to be healthy.</p>
+                        <div class="confidence-badge">Confidence: ${primary.confidence}%</div>
+                    </div>
+                `;
+            } else {
+                htmlContent += `
+                    <div class="disease-result-card diseased" style="margin-top: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                            <h2 style="margin: 0; color: #c53030;">⚠️ Diseased Plant Detected</h2>
+                            <span style="${badgeStyle}">${badgeText}</span>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <p><strong>Affected Plant:</strong> ${primaryInfo.plant || 'Unknown'}</p>
+                            <p><strong>Diagnosed Condition:</strong> ${primaryInfo.disease}</p>
+                            <div class="confidence-badge">Confidence: ${primary.confidence}%</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Other Possibilities
+            if (second || third) {
+                htmlContent += `
+                    <div style="margin-top: 1.5rem;">
+                        <h3 style="font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; margin-bottom: 0.75rem;">Other Possibilities</h3>
+                        <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+                `;
+
+                if (second) {
+                    const secondInfo = formatDiseaseNameLocal(second.disease);
+                    const secondDisplayName = (secondInfo.plant ? secondInfo.plant + ' - ' : '') + secondInfo.disease;
+                    htmlContent += `
+                        <div class="disease-result-card ${second.is_healthy ? 'healthy' : 'diseased'}" style="margin: 0; padding: 1rem; flex: 1 1 200px; border-left: 4px solid ${second.is_healthy ? '#2d9e4f' : '#e53e3e'};">
+                            <h4 style="font-size: 13px; font-weight: 700; margin-bottom: 0.5rem; color: ${second.is_healthy ? '#1a6b2f' : '#c53030'}; text-transform: capitalize;">${secondDisplayName}</h4>
+                            <div class="confidence-badge" style="font-size: 9px; padding: 2px 6px;">Confidence: ${second.confidence}%</div>
+                        </div>
+                    `;
+                }
+
+                if (third) {
+                    const thirdInfo = formatDiseaseNameLocal(third.disease);
+                    const thirdDisplayName = (thirdInfo.plant ? thirdInfo.plant + ' - ' : '') + thirdInfo.disease;
+                    htmlContent += `
+                        <div class="disease-result-card ${third.is_healthy ? 'healthy' : 'diseased'}" style="margin: 0; padding: 1rem; flex: 1 1 200px; border-left: 4px solid ${third.is_healthy ? '#2d9e4f' : '#e53e3e'};">
+                            <h4 style="font-size: 13px; font-weight: 700; margin-bottom: 0.5rem; color: ${third.is_healthy ? '#1a6b2f' : '#c53030'}; text-transform: capitalize;">${thirdDisplayName}</h4>
+                            <div class="confidence-badge" style="font-size: 9px; padding: 2px 6px;">Confidence: ${third.confidence}%</div>
+                        </div>
+                    `;
+                }
+
+                htmlContent += `
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Collapsible Learn More Section
+            const info = primary.info;
+            if (info) {
+                htmlContent += `
+                    <details style="background: rgba(255, 255, 255, 0.6); border: 1px solid #e0d8cc; border-radius: 8px; margin-top: 1.5rem; overflow: hidden; transition: all 0.3s ease;">
+                        <summary style="padding: 1rem; font-weight: 700; font-size: 12px; cursor: pointer; outline: none; list-style: none; display: flex; justify-content: space-between; align-items: center; color: #1a6b2f; background: rgba(26, 107, 47, 0.05); user-select: none;">
+                            <span>📖 LEARN MORE: ${primaryInfo.disease}</span>
+                            <span style="font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: #888;">Click to Toggle</span>
+                        </summary>
+                        <div style="padding: 1.5rem; border-top: 1px solid #e0d8cc; display: flex; flex-direction: column; gap: 1.25rem;">
+                            <div>
+                                <h4 style="color: #1a6b2f; font-size: 11px; text-transform: uppercase; margin-bottom: 0.25rem; letter-spacing: 1px;">What it is</h4>
+                                <p style="font-size: 12px; line-height: 1.8; margin: 0; color: #333;">${info.what_it_is}</p>
+                            </div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 1.5rem;">
+                                <div style="flex: 1 1 200px;">
+                                    <h4 style="color: #1a6b2f; font-size: 11px; text-transform: uppercase; margin-bottom: 0.5rem; letter-spacing: 1px;">Symptoms</h4>
+                                    <ul style="margin: 0; padding-left: 1.2rem; font-size: 12px; line-height: 1.8; color: #333;">
+                                        ${info.symptoms.map(s => `<li style="margin-bottom: 4px;">${s}</li>`).join('')}
+                                    </ul>
+                                </div>
+                                <div style="flex: 1 1 200px;">
+                                    <h4 style="color: #1a6b2f; font-size: 11px; text-transform: uppercase; margin-bottom: 0.5rem; letter-spacing: 1px;">Causes</h4>
+                                    <ul style="margin: 0; padding-left: 1.2rem; font-size: 12px; line-height: 1.8; color: #333;">
+                                        ${info.causes.map(c => `<li style="margin-bottom: 4px;">${c}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            </div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 1.5rem;">
+                                <div style="flex: 1 1 200px;">
+                                    <h4 style="color: #1a6b2f; font-size: 11px; text-transform: uppercase; margin-bottom: 0.5rem; letter-spacing: 1px;">Immediate Treatment</h4>
+                                    <ul style="margin: 0; padding-left: 1.2rem; font-size: 12px; line-height: 1.8; color: #333;">
+                                        ${info.treatment.map(t => `<li style="margin-bottom: 4px;">${t}</li>`).join('')}
+                                    </ul>
+                                </div>
+                                <div style="flex: 1 1 200px;">
+                                    <h4 style="color: #1a6b2f; font-size: 11px; text-transform: uppercase; margin-bottom: 0.5rem; letter-spacing: 1px;">Prevention</h4>
+                                    <ul style="margin: 0; padding-left: 1.2rem; font-size: 12px; line-height: 1.8; color: #333;">
+                                        ${info.prevention.map(p => `<li style="margin-bottom: 4px;">${p}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                `;
+            }
+
+            resContainer.innerHTML = htmlContent;
+            resContainer.style.display = 'block';
+            
+            resContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        };
+    });
+    </script>
 {% endblock %}

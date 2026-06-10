@@ -57,16 +57,22 @@ def predict_disease(model, class_names, image_bytes):
         preprocessed_img = preprocess_leaf_image(image_bytes)
         predictions = model.predict(preprocessed_img)
         
-        pred_idx = np.argmax(predictions[0])
-        confidence = float(predictions[0][pred_idx]) * 100
-        predicted_class = class_names[pred_idx]
+        # Get top-3 indices using argsort in descending order
+        top_3_indices = np.argsort(predictions[0])[::-1][:3]
         
-        is_healthy = "healthy" in predicted_class.lower()
-        
+        predictions_list = []
+        for idx in top_3_indices:
+            confidence = float(predictions[0][idx]) * 100
+            predicted_class = class_names[idx]
+            is_healthy = "healthy" in predicted_class.lower()
+            predictions_list.append({
+                "disease": predicted_class,
+                "confidence": round(confidence, 2),
+                "is_healthy": is_healthy
+            })
+            
         return {
-            "disease": predicted_class,
-            "confidence": round(confidence, 2),
-            "is_healthy": is_healthy
+            "predictions": predictions_list
         }
     except Exception as e:
         raise RuntimeError(f"Prediction failed: {e}")
