@@ -1,7 +1,6 @@
 from pyparsing import results
 from flask import jsonify
 from pyparsing import results
-from pyparsing import results
 import os
 from flask import Flask, render_template, request
 import joblib
