@@ -1,0 +1,17 @@
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="{{ url_for('home') }}" class="nav-brand">KRISHIGRAHAN</a>
+        <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+        <div class="nav-menu" id="nav-menu">
+            <a href="{{ url_for('home') }}" class="nav-link {% if request.endpoint == 'home' %}active{% endif %}">Home</a>
+            <a href="{{ url_for('crop') }}" class="nav-link {% if request.endpoint in ['crop', 'predict'] %}active{% endif %}">Crop Recommendation</a>
+            <a href="{{ url_for('disease') }}" class="nav-link {% if request.endpoint == 'disease' %}active{% endif %}">Disease Detection</a>
+            <a href="{{ url_for('schemes') }}" class="nav-link {% if request.endpoint == 'schemes' %}active{% endif %}">Government Schemes</a>
+            <a href="{{ url_for('about') }}" class="nav-link {% if request.endpoint == 'about' %}active{% endif %}">About</a>
+        </div>
+    </div>
+</nav>

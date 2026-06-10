@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!-- Plant Disease Detection Section -->
+    <div class="prediction_form" id="disease_detection">
+        <div class="prediction_text">
+            <h1>Plant Disease Detection</h1>
+            <p>AI-powered leaf analysis using Computer Vision</p>
+        </div>
+
+        <div class="form disease-card">
+            <!-- Tabs Toggle -->
+            <div class="disease-tabs">
+                <button type="button" class="tab-btn active" id="tab-upload-btn">Upload Image</button>
+                <button type="button" class="tab-btn" id="tab-camera-btn">Use Camera</button>
+            </div>
+
+            <!-- Upload Tab Content -->
+            <div class="tab-content" id="upload-content">
+                <div class="drag-area" id="drag-area">
+                    <div class="icon">📁</div>
+                    <header>Drag & Drop to Upload File</header>
+                    <span>OR</span>
+                    <button type="button" id="browse-btn">Browse File</button>
+                    <input type="file" id="disease-file-input" accept="image/*" hidden>
+                </div>
+                <div class="preview-container" id="upload-preview-container" style="display: none;">
+                    <img id="upload-preview" src="" alt="Uploaded Leaf Preview">
+                    <button type="button" class="remove-btn" id="remove-upload-btn">Remove Image</button>
+                </div>
+            </div>
+
+            <!-- Camera Tab Content -->
+            <div class="tab-content" id="camera-content" style="display: none;">
+                <div class="camera-container">
+                    <video id="webcam" autoplay playsinline></video>
+                    <canvas id="photo-canvas" style="display: none;"></canvas>
+                    <div class="camera-controls">
+                        <button type="button" id="start-camera-btn">📷 Start Camera</button>
+                        <button type="button" id="capture-btn" style="display: none;">📸 Capture Photo</button>
+                    </div>
+                </div>
+                <div class="preview-container" id="camera-preview-container" style="display: none;">
+                    <img id="camera-preview" src="" alt="Captured Leaf Preview">
+                    <button type="button" class="remove-btn" id="remove-camera-btn">Retake Photo</button>
+                </div>
+            </div>
+
+            <!-- Submit and Loader -->
+            <div class="disease-submit-container" style="margin-top: 1.5rem; text-align: center;">
+                <button type="button" id="detect-btn" disabled>🔍 Analyze Leaf Image</button>
+
+                <div class="spinner-container" id="disease-spinner" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Analyzing image with AI...</p>
+                </div>
+            </div>
+
+            <!-- Result Display -->
+            <div class="disease-result-container" id="disease-result" style="display: none;"></div>
+        </div>
+    </div>
+{% endblock %}

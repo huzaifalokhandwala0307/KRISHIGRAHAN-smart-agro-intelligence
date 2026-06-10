@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KRISHIGRAHAN - Smart Agro Intelligence</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    {% block content %}
+    {% endblock %}
+
+    <footer>
+        KRISHIGRAHAN | Built with love for farmers by Smart Agro Intelligence | @Huzaifa | 28.3.2026
+    </footer>
+
+    <script src="static/script.js"></script>   
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

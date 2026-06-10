@@ -2,6 +2,7 @@ import os
 from flask import Flask, render_template, request
 import joblib
 import pandas as pd
+from inference import load_disease_model, predict_disease
 
 app = Flask(__name__)
 
@@ -10,6 +11,11 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # Load models
 crop_pred_model = joblib.load(os.path.join(BASE_DIR, "crop_model.joblib"))
 fert_pred_model = joblib.load(os.path.join(BASE_DIR, "fertilizer_model.joblib"))
+
+# Load disease detection model
+MODEL_PATH = os.path.join(BASE_DIR, "krishigrahan_plant_disease_v1.keras")
+CLASSES_PATH = os.path.join(BASE_DIR, "class_names.json")
+DISEASE_MODEL, DISEASE_CLASSES = load_disease_model(MODEL_PATH, CLASSES_PATH)
 
 crop_advice = {
     "rice": {
@@ -190,9 +196,25 @@ crop_advice = {
     }
 }
 
-@app.route('/', methods=['GET'])
-def index():
-    return render_template('index.html', crop=None, fert=None, info=None)
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+@app.route("/crop")
+def crop():
+    return render_template("crop.html", crop=None, fert=None, info=None)
+
+@app.route("/disease")
+def disease():
+    return render_template("disease.html")
+
+@app.route("/schemes")
+def schemes():
+    return render_template("schemes.html")
+
+@app.route("/about")
+def about():
+    return render_template("about.html")
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -235,11 +257,33 @@ def predict():
         fert = fert_pred_model.predict(fert_input)[0]
         info = crop_advice.get(crop.lower(), None)
 
-        return render_template('index.html', crop=crop, fert=fert, info=info)
+        return render_template('crop.html', crop=crop, fert=fert, info=info)
 
     except Exception as e:
         print(f"Error during prediction: {e}")
-        return render_template('index.html', error="An error occurred during prediction. Please check your inputs.", crop=None, fert=None, info=None)
+        return render_template('crop.html', error="An error occurred during prediction. Please check your inputs.", crop=None, fert=None, info=None)
+
+
+@app.route('/predict_disease', methods=['POST'])
+def predict_disease_route():
+    try:
+        if 'leaf_image' not in request.files:
+            return {"error": "No image file provided in request (expected field 'leaf_image')."}, 400
+            
+        file = request.files['leaf_image']
+        if file.filename == '':
+            return {"error": "No selected image file."}, 400
+            
+        image_bytes = file.read()
+        if not image_bytes:
+            return {"error": "Image file is empty."}, 400
+            
+        result = predict_disease(DISEASE_MODEL, DISEASE_CLASSES, image_bytes)
+        return result
+        
+    except Exception as e:
+        print(f"Error in predict_disease route: {e}")
+        return {"error": f"An error occurred during prediction: {str(e)}"}, 400
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="prediction_form" id="about_page">
+        <div class="prediction_text">
+            <h1>About KrishiGrahan</h1>
+            <p>Smart Agro Intelligence Platform for Modern Farmers</p>
+        </div>
+
+        <!-- What is KrishiGrahan -->
+        <div class="form disease-card" style="margin-bottom: 2rem; max-width: 800px;">
+            <h5 style="border-left: 3px solid #1a6b2f; padding-left: 10px; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #1a6b2f; margin-bottom: 10px;">Platform Overview</h5>
+            <h2 style="font-family: 'Playfair Display', serif; font-size: 24px; color: #1a3020; margin-bottom: 15px;">What is KrishiGrahan?</h2>
+            <p style="font-size: 14px; line-height: 1.8; color: #444; margin-bottom: 0;">
+                KrishiGrahan is an AI-powered smart agriculture platform designed to empower farmers with data-driven insights. By leveraging advanced Machine Learning and Computer Vision, the platform provides tailored crop recommendations, customized fertilizer suggestions, and real-time plant disease diagnosis. Our goal is to reduce input costs, maximize harvest yields, and promote sustainable farming practices.
+            </p>
+        </div>
+
+        <!-- How It Works Section -->
+        <div class="fieldneeds" style="padding: 2rem 0; background: transparent;">
+            <h3>Workflow</h3>
+            <h1>How It Works</h1>
+            <div class="features" style="max-width: 900px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+                <div style="background: #e8f8ed; border-color: #2d9e4f;">
+                    <h1>🌾</h1>
+                    <h3 style="color: #1a6b2f;">1. Crop Recommendation</h3>
+                    <p style="color: #2d7a40; font-size: 12px; line-height: 1.7;">Analyze N-P-K soil nutrients, temperature, humidity, pH, and rainfall to discover the ideal crop to sow in your field.</p>
+                </div>
+                <div style="background: #fff8e6; border-color: #e09000;">
+                    <h1>🧪</h1>
+                    <h3 style="color: #b06b00;">2. Fertilizer Suggestion</h3>
+                    <p style="color: #c07a10; font-size: 12px; line-height: 1.7;">Calculate the exact chemical and organic fertilizers needed to replenish nutrients in your soil based on the target crop.</p>
+                </div>
+                <div style="background: #e8f0ff; border-color: #3060d0;">
+                    <h1>🔬</h1>
+                    <h3 style="color: #1a4ab0;">3. Disease Detection</h3>
+                    <p style="color: #2a5ac0; font-size: 12px; line-height: 1.7;">Upload leaf photos or take a snapshot using your phone's camera to instantly detect plant diseases using deep learning neural networks.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tech Stack & Build details using scheme-card grid layout -->
+        <div class="schemes" style="padding: 2rem 0; background: transparent;">
+            <h3>System Details</h3>
+            <h1 style="margin-bottom: 2rem;">Technology Stack & Team</h1>
+            <div class="schemes-grid" style="max-width: 800px;">
+                <div class="scheme-card" style="border-left-color: #1a4ab0;">
+                    <h4 style="color: #1a4ab0;">AI & Machine Learning</h4>
+                    <p>Powered by Scikit-Learn (Random Forest classifiers) and TensorFlow/Keras (MobileNetV2 deep neural network for Computer Vision).</p>
+                </div>
+                <div class="scheme-card" style="border-left-color: #e09000;">
+                    <h4 style="color: #e09000;">Backend & Web Framework</h4>
+                    <p>Built using Python, Flask, and Pandas to run fast real-time model inferences and render HTML dynamically.</p>
+                </div>
+                <div class="scheme-card" style="border-left-color: #2d9e4f;">
+                    <h4 style="color: #2d9e4f;">Frontend Design</h4>
+                    <p>Designed using HTML5, Vanilla JavaScript, CSS3 grids, and responsive Glassmorphic elements for desktop and mobile devices.</p>
+                </div>
+                <div class="scheme-card" style="border-left-color: #d04030;">
+                    <h4 style="color: #d04030;">Built By</h4>
+                    <p>Developed with love by Smart Agro Intelligence to support Indian farmers and make technology accessible to all.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
