@@ -1,7 +1,12 @@
+from pyparsing import results
+from flask import jsonify
+from pyparsing import results
+from pyparsing import results
 import os
 from flask import Flask, render_template, request
 import joblib
 import pandas as pd
+import numpy as np  
 from inference import load_disease_model, predict_disease
 
 app = Flask(__name__)
@@ -278,9 +283,15 @@ def predict_disease_route():
         if not image_bytes:
             return {"error": "Image file is empty."}, 400
             
-        result = predict_disease(DISEASE_MODEL, DISEASE_CLASSES, image_bytes)
-        return result
-        
+
+        result = predict_disease(
+            DISEASE_MODEL,
+            DISEASE_CLASSES,
+            image_bytes
+        )
+
+        return jsonify(result)
+
     except Exception as e:
         print(f"Error in predict_disease route: {e}")
         return {"error": f"An error occurred during prediction: {str(e)}"}, 400

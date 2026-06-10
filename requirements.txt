@@ -4,5 +4,6 @@ scikit-learn
 joblib
 gunicorn
 pandas
-tensorflow
-pillow
+tensorflow==2.19.0
+pillow
+Flask-Limiter   
