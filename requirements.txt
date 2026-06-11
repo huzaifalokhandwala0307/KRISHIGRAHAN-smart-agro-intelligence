@@ -1,8 +1,13 @@
 flask
 gunicorn
-tensorflow-cpu
+
+numpy
+pandas
+
 scikit-learn==1.7.2
 joblib
-pandas
-numpy
+
+tensorflow==2.19.0
+
 pillow
+Flask-Limiter
