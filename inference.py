@@ -3,7 +3,8 @@ import json
 import io
 import logging
 from PIL import Image
-import tflite_runtime.interpreter as tflite
+import tensorflow as tf
+tflite = tf.lite
 
 def get_model(model_path, classes_path):
     """Load TFLite interpreter and class names. Called once on first request."""
