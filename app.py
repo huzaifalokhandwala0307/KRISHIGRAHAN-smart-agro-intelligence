@@ -16,7 +16,7 @@ crop_pred_model = joblib.load(os.path.join(BASE_DIR, "crop_model.joblib"))
 fert_pred_model = joblib.load(os.path.join(BASE_DIR, "fertilizer_model.joblib"))
 
 # Load disease detection model
-MODEL_PATH = os.path.join(BASE_DIR, "disease_model.tflite")
+MODEL_PATH = os.path.join(BASE_DIR, "krishigrahan_plant_disease_v1.keras")
 CLASSES_PATH = os.path.join(BASE_DIR, "class_names.json")
 DISEASE_MODEL = None
 DISEASE_CLASSES = None
