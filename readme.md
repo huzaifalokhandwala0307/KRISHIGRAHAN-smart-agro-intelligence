@@ -135,6 +135,15 @@ PM-KISAN · PM Fasal Bima Yojana · Kisan Credit Card · Soil Health Card · eNA
 - 🎯 YOLO-based disease localization (highlight infected leaf region)
 - 🤖 AI farming chatbot
 
+
+---
+
+## 🔗 Deployed link
+
+
+https://krishigrahan-857872478296.asia-south1.run.app
+
+
 ---
 
 ## 📜 License
