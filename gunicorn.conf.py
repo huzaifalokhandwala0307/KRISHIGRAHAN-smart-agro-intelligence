@@ -1,4 +1,5 @@
-timeout = 120
-workers = 2
+timeout = 180
+workers = 1
 threads = 2
-worker_class = "sync"
+worker_class = "gthread"
+preload_app = False
