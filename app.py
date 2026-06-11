@@ -4,7 +4,7 @@ from flask import Flask, render_template, request
 import joblib
 import pandas as pd
 import numpy as np  
-from inference import load_disease_model, predict_disease
+from inference import get_model, predict_disease
 from disease_data import get_disease_info
 
 app = Flask(__name__)
@@ -16,9 +16,10 @@ crop_pred_model = joblib.load(os.path.join(BASE_DIR, "crop_model.joblib"))
 fert_pred_model = joblib.load(os.path.join(BASE_DIR, "fertilizer_model.joblib"))
 
 # Load disease detection model
-MODEL_PATH = os.path.join(BASE_DIR, "krishigrahan_plant_disease_v1.keras")
+MODEL_PATH = os.path.join(BASE_DIR, "disease_model.tflite")
 CLASSES_PATH = os.path.join(BASE_DIR, "class_names.json")
-DISEASE_MODEL, DISEASE_CLASSES = load_disease_model(MODEL_PATH, CLASSES_PATH)
+DISEASE_MODEL = None
+DISEASE_CLASSES = None
 
 crop_advice = {
     "rice": {
@@ -281,6 +282,12 @@ def predict_disease_route():
         if not image_bytes:
             return {"error": "Image file is empty."}, 400
             
+        global DISEASE_MODEL, DISEASE_CLASSES
+        if DISEASE_MODEL is None:
+            import logging
+            logging.info("Loading disease model for first time...")
+            DISEASE_MODEL, DISEASE_CLASSES = get_model(MODEL_PATH, CLASSES_PATH)
+            logging.info("Disease model loaded successfully.")
 
         result = predict_disease(
             DISEASE_MODEL,

@@ -1,78 +1,56 @@
-import io
-import json
 import numpy as np
+import json
+import io
+import logging
 from PIL import Image
-import tensorflow as tf
-from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
+import tflite_runtime.interpreter as tflite
 
-def load_disease_model(model_path, class_names_path):
-    """
-    Loads the Keras model and class names JSON file, and validates they match.
-    Raises RuntimeError if there's a mismatch.
-    """
-    try:
-        model = tf.keras.models.load_model(model_path)
-    except Exception as e:
-        raise RuntimeError(f"Failed to load Keras model from {model_path}: {e}")
-
-    try:
-        with open(class_names_path, 'r') as f:
-            class_names = json.load(f)
-    except Exception as e:
-        raise RuntimeError(f"Failed to load class names from {class_names_path}: {e}")
-
-    expected_classes = model.output_shape[-1]
-    actual_classes = len(class_names)
-    
-    if expected_classes != actual_classes:
+def get_model(model_path, classes_path):
+    """Load TFLite interpreter and class names. Called once on first request."""
+    interpreter = tflite.Interpreter(model_path=model_path)
+    interpreter.allocate_tensors()
+    with open(classes_path) as f:
+        class_names = json.load(f)
+    # Validate
+    output_details = interpreter.get_output_details()
+    num_classes = output_details[0]['shape'][-1]
+    if num_classes != len(class_names):
         raise RuntimeError(
-            f"Model expects {expected_classes} classes but class_names.json has {actual_classes} entries. "
-            "Regenerate class_names.json."
+            f"Model expects {num_classes} classes but class_names.json has "
+            f"{len(class_names)} entries. Regenerate class_names.json."
         )
-        
-    return model, class_names
+    logging.info(f"TFLite model loaded. Classes: {num_classes}")
+    return interpreter, class_names
 
 def preprocess_leaf_image(image_bytes):
-    """
-    Preprocesses the raw image bytes: opens, resizes to 224x224,
-    converts to numpy array, adds batch dimension, and applies MobileNetV2 preprocessing.
-    """
-    try:
-        img = Image.open(io.BytesIO(image_bytes))
-        if img.mode != 'RGB':
-            img = img.convert('RGB')
-        img = img.resize((224, 224))
-        img_array = np.array(img, dtype=np.float32)
-        img_array = np.expand_dims(img_array, axis=0)
-        img_array = preprocess_input(img_array)
-        return img_array
-    except Exception as e:
-        raise ValueError(f"Failed to preprocess image: {e}")
+    """Resize, normalize to [-1, 1] for MobileNetV2."""
+    img = Image.open(io.BytesIO(image_bytes)).resize((224, 224)).convert("RGB")
+    arr = np.array(img, dtype=np.float32)
+    arr = (arr / 127.5) - 1.0
+    return np.expand_dims(arr, axis=0)
 
-def predict_disease(model, class_names, image_bytes):
-    """
-    Preprocesses leaf image, runs model inference, and returns prediction details.
-    """
+def predict_disease(interpreter, class_names, image_bytes):
+    """Run inference and return top-3 predictions."""
     try:
-        preprocessed_img = preprocess_leaf_image(image_bytes)
-        predictions = model.predict(preprocessed_img)
-        
-        # Get top-3 indices using argsort in descending order
-        top_3_indices = np.argsort(predictions[0])[::-1][:3]
-        
-        predictions_list = []
-        for idx in top_3_indices:
-            confidence = float(predictions[0][idx]) * 100
-            predicted_class = class_names[idx]
-            is_healthy = "healthy" in predicted_class.lower()
-            predictions_list.append({
-                "disease": predicted_class,
-                "confidence": round(confidence, 2),
-                "is_healthy": is_healthy
-            })
-            
-        return {
-            "predictions": predictions_list
-        }
+        input_details = interpreter.get_input_details()
+        output_details = interpreter.get_output_details()
+
+        arr = preprocess_leaf_image(image_bytes)
+        interpreter.set_tensor(input_details[0]['index'], arr)
+        interpreter.invoke()
+        output = interpreter.get_tensor(output_details[0]['index'])[0]
+
+        top3_idx = np.argsort(output)[::-1][:3]
+        predictions = [
+            {
+                "disease": class_names[i],
+                "confidence": round(float(output[i]) * 100, 2),
+                "is_healthy": "healthy" in class_names[i].lower()
+            }
+            for i in top3_idx
+        ]
+        return {"predictions": predictions}
+
     except Exception as e:
-        raise RuntimeError(f"Prediction failed: {e}")
+        logging.error(f"Inference error: {e}")
+        raise
