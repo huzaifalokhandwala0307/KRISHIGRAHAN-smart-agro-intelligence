@@ -4,6 +4,6 @@ scikit-learn==1.7.2
 joblib
 gunicorn
 pandas
-tensorflow==2.19.0
+tflite-runtime==2.14.0
 pillow
-Flask-Limiter   
+Flask-Limiter
