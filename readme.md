@@ -67,7 +67,7 @@ Built using **Deep Learning + Machine Learning + Flask**.
 
 ### 1️⃣ Clone the repository
 
-    git clone https://github.com/your-username/krishigrahan.git
+    git clone https://github.com/huzaifalokhandwala0307/KRISHIGRAHAN-smart-agro-intelligence.git
     cd krishigrahan
 
 ### 2️⃣ Install dependencies
